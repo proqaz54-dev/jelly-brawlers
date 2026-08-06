@@ -51,7 +51,9 @@ jobs:
           JB_AUTOSTART=1 godot --headless --path . --quit-after 600
 
       - name: Export debug APK
-        run: godot --headless --path . --export-debug "Android" build/jelly-brawlers.apk
+        run: |
+          mkdir -p build
+          godot --headless --path . --export-debug "Android" build/jelly-brawlers.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
