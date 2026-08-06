@@ -1,17 +1,16 @@
-# Gradle
-android/.gradle/
-android/build/
-android/app/build/
-android/local.properties
-android/.idea/
-*.iml
-.kotlin/
+# Godot
+.godot/
+.godot-bin/
+*.import
+import/
 
-# CMake / NDK
-android/app/.cxx/
-android/app/src/main/cpp/CMakeFiles/
-android/app/src/main/cpp/cmake_install.cmake
-android/app/src/main/cpp/Makefile
+# Build output
+build/
+
+# Editor
+.idea/
+*.iml
+.vscode/
 
 # misc
 *.log

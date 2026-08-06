@@ -1,13 +1,13 @@
-# Jelly Brawlers — C++ ragdoll brawler for Android
+# Jelly Brawlers — ragdoll brawler for Android (Godot 4)
 
 Оригінальна гра для Android, натхненна жанром **Gang Beasts**: м'які "желейні"
 персонажі, що б'ються на фізичній арені з ямою-лавою.
 
-- **100% C++ (Android NDK + CMake)**, рендер на **OpenGL ES 2.0**
-- Rагdoll-подібна фізика персонажа на чистому C++ (Verlet-пружини + колізії коло-до-сегмента)
+- **Godot 4.2** (GDScript), рендер **GL Compatibility**
+- Rагdoll-фізика персонажа: 6 круглих RigidBody2D, скріплених пружинними імпульсами
 - Локальні режими: **1 гравець проти бота** та **2 гравці на одному екрані**
 - Керування touch: віртуальний джойстик + кнопки **PUNCH / KIK / JMP**
-- Матч до 3 раундів, іскри, тряска камери, лава, вбудований піксельний шрифт для UI
+- Матч до 3 раундів, іскри, тряска камери, лава
 
 > Це оригінальна гра, яку лише *надихає* жанр Gang Beasts. Жодних асетів,
 > назв чи інтелектуальної власності оригіналу тут немає.
@@ -24,23 +24,22 @@
 Після push на `main` GitHub Actions автоматично збере debug-APK — артефакт
 `jelly-brawlers-debug-apk` у вкладці **Actions**.
 
-Локально:
+Локально (потрібні лише `wget`/`unzip`, Java та Android SDK):
 
 ```bash
-cd android
-export ANDROID_HOME=...    # шлях до Android SDK з NDK 26
-gradle assembleDebug
+./build.sh    # скачає Godot 4.2.2 headless + templates, збере build/jelly-brawlers.apk
 ```
 
-Готовий APK: `android/app/build/outputs/apk/debug/app-debug.apk`
+Готовий APK: `build/jelly-brawlers.apk` (debug, підписаний `android/debug.keystore`).
 
 ## 📁 Структура
 
 ```
-android/app/src/main/cpp/
-├── game.h / game.cpp         # логіка: фізика, бій, AI-бот, стани гри
-├── renderer.h / renderer.cpp # GLES2: арена, персонажі, UI, шрифт
-└── native_bridge.cpp         # JNI-міст: touch та життєвий цикл
+scripts/
+├── main.gd        # контроль гри: арена, раунди, AI-бот, іскри, камера
+├── player.gd      # JellyPlayer: ragdoll-тіло, пружини, атаки
+├── touch_ui.gd    # віртуальний джойстик + кнопки
+└── hud.gd         # меню, відлік, рахунок, оверлеї
 ```
 
 ## 📄 Ліцензія
