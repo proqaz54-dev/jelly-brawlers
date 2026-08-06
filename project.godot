@@ -20,6 +20,7 @@ pointing/emulate_touch_from_mouse=true
 [physics]
 
 2d/default_gravity=20.0
+3d/default_gravity=13.0
 
 [rendering]
 
