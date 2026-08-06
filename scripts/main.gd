@@ -280,16 +280,34 @@ func _draw() -> void:
 			Rect2(Vector2(-half_w - 1, cy - half_h + (t0 - 0.5) * half_h * 2.0),
 			Vector2(half_w * 2.0 + 2.0, (t1 - t0) * half_h * 2.0)), col)
 
+	# soft light glow behind the arena
+	draw_circle(Vector2(0, -1.2), 11.0, Color(0.45, 0.30, 0.85, 0.05))
+	draw_circle(Vector2(0, -1.2), 7.0, Color(0.45, 0.30, 0.85, 0.06))
+	draw_circle(Vector2(0, 0.1), 4.5, Color(0.95, 0.50, 0.25, 0.05))
+	draw_circle(Vector2(0, 1.2), 2.9, Color(0.95, 0.50, 0.25, 0.06))
+
 	# floor blocks
 	var floor_c := Color(0.27, 0.30, 0.43)
-	var floor_top := Color(0.40, 0.44, 0.62)
+	var floor_top := Color(0.42, 0.47, 0.66)
 	var floor_edge := Color(0.20, 0.22, 0.32)
 	draw_rect(Rect2(Vector2(-WALL_X, FLOOR_Y), Vector2(WALL_X - GAP, FLOOR_BOTTOM - FLOOR_Y)), floor_c)
 	draw_rect(Rect2(Vector2(GAP, FLOOR_Y), Vector2(WALL_X - GAP, FLOOR_BOTTOM - FLOOR_Y)), floor_c)
-	draw_rect(Rect2(Vector2(-WALL_X, FLOOR_Y), Vector2(WALL_X - GAP, 0.16)), floor_top)
-	draw_rect(Rect2(Vector2(GAP, FLOOR_Y), Vector2(WALL_X - GAP, 0.16)), floor_top)
-	draw_rect(Rect2(Vector2(-WALL_X, FLOOR_Y - 0.0), Vector2(WALL_X - GAP, 0.10)), Color(0.16, 0.17, 0.26))
-	draw_rect(Rect2(Vector2(GAP, FLOOR_Y - 0.0), Vector2(WALL_X - GAP, 0.10)), Color(0.16, 0.17, 0.26))
+	draw_rect(Rect2(Vector2(-WALL_X, FLOOR_Y), Vector2(WALL_X - GAP, 0.18)), floor_top)
+	draw_rect(Rect2(Vector2(GAP, FLOOR_Y), Vector2(WALL_X - GAP, 0.18)), floor_top)
+	draw_rect(Rect2(Vector2(-WALL_X, FLOOR_Y), Vector2(WALL_X - GAP, 0.10)), Color(0.16, 0.17, 0.26))
+	draw_rect(Rect2(Vector2(GAP, FLOOR_Y), Vector2(WALL_X - GAP, 0.10)), Color(0.16, 0.17, 0.26))
+
+	# floor grid
+	var grid := Color(0.05, 0.06, 0.11, 0.5)
+	for i in 6:
+		var x := -WALL_X + 0.62 + i * 1.12
+		draw_line(Vector2(x, FLOOR_Y + 0.12), Vector2(x, FLOOR_BOTTOM - 0.04), grid, 0.05)
+		draw_line(Vector2(-x, FLOOR_Y + 0.12), Vector2(-x, FLOOR_BOTTOM - 0.04), grid, 0.05)
+	draw_line(Vector2(-WALL_X + 0.1, FLOOR_Y + 0.88), Vector2(-GAP - 0.1, FLOOR_Y + 0.88), grid, 0.05)
+	draw_line(Vector2(GAP + 0.1, FLOOR_Y + 0.88), Vector2(WALL_X - 0.1, FLOOR_Y + 0.88), grid, 0.05)
+	# hazard stripes near the pit
+	draw_rect(Rect2(Vector2(-GAP - 0.22, FLOOR_Y), Vector2(0.12, 0.5)), Color(0.98, 0.75, 0.22, 0.8))
+	draw_rect(Rect2(Vector2(GAP + 0.10, FLOOR_Y), Vector2(0.12, 0.5)), Color(0.98, 0.75, 0.22, 0.8))
 
 	# gap side trim
 	draw_rect(Rect2(Vector2(-GAP - 0.18, FLOOR_Y), Vector2(0.18, FLOOR_BOTTOM - FLOOR_Y)), floor_edge)
@@ -297,22 +315,46 @@ func _draw() -> void:
 
 	# side walls
 	var wall_c := Color(0.20, 0.22, 0.38)
+	var bar_top := Color(0.34, 0.38, 0.58)
+	var bar := Color(0.24, 0.26, 0.44)
 	draw_rect(Rect2(Vector2(-WALL_X - 0.45, WALL_TOP), Vector2(0.45, FLOOR_Y - WALL_TOP)), wall_c)
 	draw_rect(Rect2(Vector2(WALL_X, WALL_TOP), Vector2(0.45, FLOOR_Y - WALL_TOP)), wall_c)
-	draw_rect(Rect2(Vector2(-WALL_X - 0.45, WALL_TOP), Vector2(WALL_X * 2.0 + 0.9, 0.3)), Color(0.28, 0.31, 0.5))
 	for i in 5:
 		var y := FLOOR_Y - 0.9 - i * 1.1
 		draw_circle(Vector2(-WALL_X - 0.22, y), 0.11, Color(0.35, 0.38, 0.6))
 		draw_circle(Vector2(WALL_X + 0.22, y), 0.11, Color(0.35, 0.38, 0.6))
+	# top rail
+	draw_rect(Rect2(Vector2(-WALL_X - 0.75, WALL_TOP - 0.30), Vector2(WALL_X * 2.0 + 1.5, 0.16)), bar_top)
+	draw_rect(Rect2(Vector2(-WALL_X - 0.75, WALL_TOP - 0.14), Vector2(WALL_X * 2.0 + 1.5, 0.05)), Color(0.16, 0.18, 0.30))
+	# cage bars rising above the rail
+	for i in 12:
+		var x := -WALL_X - 0.62 + i * 1.34
+		if x > WALL_X + 0.62:
+			break
+		draw_rect(Rect2(Vector2(x, WALL_TOP - 3.15), Vector2(0.10, 2.85)), bar)
+		draw_rect(Rect2(Vector2(x - 0.02, WALL_TOP - 3.15), Vector2(0.14, 0.10)), bar_top)
+
+	# soft blob shadows under the players
+	for pl in [p1, p2]:
+		if pl == null:
+			continue
+		var t: Vector2 = pl.torso_pos()
+		if t.y >= KILL_Y:
+			continue
+		var sw := clampf(1.9 - t.y * 0.10, 0.8, 1.9)
+		draw_set_transform(Vector2(t.x, FLOOR_Y + 0.06), 0.0, Vector2(sw, 0.30))
+		draw_circle(Vector2.ZERO, 1.0, Color(0.0, 0.0, 0.0, 0.32))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 	# lava under the pit gap
 	var pulse := 0.5 + 0.5 * sin(sim_t * 6.0)
 	var lava := Color(1.0, 0.36, 0.12).lerp(Color(1.0, 0.8, 0.3), pulse)
+	draw_rect(Rect2(Vector2(-GAP + 0.25, KILL_Y - 0.30), Vector2(GAP * 2 - 0.5, 0.22)), Color(1.0, 0.55, 0.2, 0.16))
 	draw_rect(Rect2(Vector2(-GAP + 0.25, KILL_Y - 0.62), Vector2(GAP * 2 - 0.5, 0.7)), lava)
 	draw_rect(Rect2(Vector2(-GAP + 0.25, KILL_Y - 0.62 - 0.55), Vector2(GAP * 2 - 0.5, 0.55)), Color(1.0, 0.6, 0.25, 0.25))
 	draw_rect(Rect2(Vector2(-GAP + 0.25, KILL_Y + 0.08), Vector2(GAP * 2 - 0.5, 0.35)), Color(0.4, 0.08, 0.02, 0.6))
 
 func _bg_color(t: float) -> Color:
-	var top := Color(0.16, 0.09, 0.34)
-	var bottom := Color(0.07, 0.04, 0.16)
+	var top := Color(0.20, 0.12, 0.38)
+	var bottom := Color(0.06, 0.03, 0.14)
 	return top.lerp(bottom, t)

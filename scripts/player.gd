@@ -8,8 +8,8 @@ signal on_hit(pos: Vector2, col: Color)
 enum Body { TORSO = 0, HEAD = 1, HAND_L = 2, HAND_R = 3, FOOT_L = 4, FOOT_R = 5 }
 
 const RADII := {
-	Body.HEAD: 0.36, Body.TORSO: 0.34, Body.HAND_L: 0.21,
-	Body.HAND_R: 0.21, Body.FOOT_L: 0.23, Body.FOOT_R: 0.23,
+	Body.HEAD: 0.38, Body.TORSO: 0.34, Body.HAND_L: 0.24,
+	Body.HAND_R: 0.24, Body.FOOT_L: 0.27, Body.FOOT_R: 0.27,
 }
 const MASS := {
 	Body.HEAD: 0.5, Body.TORSO: 1.0, Body.HAND_L: 0.35,
@@ -247,6 +247,7 @@ func _check_hit(pos: Vector2, strong: bool) -> void:
 
 class BodyArt:
 	extends Node2D
+	## Gang-Beasts style: glossy squishy blob with wobble, sheen and a face.
 
 	var r := 0.3
 	var mainc := Color.WHITE
@@ -255,14 +256,44 @@ class BodyArt:
 	var kind := 0
 
 	func _draw() -> void:
-		draw_circle(Vector2.ZERO, r + 0.05, darkc)
+		var rb: RigidBody2D = get_parent()
+		var vel: Vector2 = rb.linear_velocity
+		var sp := vel.length()
+		var k := clampf(sp * 0.010, 0.0, 0.30)
+		var sx := 1.0 + k
+		var sy := 1.0 - k * 0.75
+		if kind == JellyPlayer.Body.TORSO:
+			sx *= 1.18
+			sy *= 0.90
+		var ang := vel.angle() if sp > 0.5 else 0.0
+		draw_set_transform(Vector2.ZERO, ang, Vector2(sx, sy))
+
+		var outline := Color(0.07, 0.05, 0.11, 0.95)
+		var o := r + 0.065
+		draw_circle(Vector2.ZERO, o, outline)
 		draw_circle(Vector2.ZERO, r, mainc)
-		draw_circle(Vector2(-r * 0.18, -r * 0.28), r * 0.38, lightc)
+		draw_circle(Vector2(0.0, r * 0.30), r * 0.80, Color(darkc.r, darkc.g, darkc.b, 0.55))
+		draw_circle(Vector2(-r * 0.26, -r * 0.30), r * 0.52, Color(1, 1, 1, 0.26))
+		draw_circle(Vector2(-r * 0.40, -r * 0.44), r * 0.20, Color(1, 1, 1, 0.82))
+		draw_arc(Vector2.ZERO, r * 0.92, -0.5, 1.1, 18, Color(1, 1, 1, 0.38), r * 0.13)
+
 		if kind == JellyPlayer.Body.HEAD:
 			var pl: JellyPlayer = get_parent().get_parent()
 			var f := pl.facing
-			draw_circle(Vector2(f * 0.13, -0.12), 0.1, Color(1, 1, 1))
-			draw_circle(Vector2(f * 0.13, 0.12), 0.1, Color(1, 1, 1))
-			draw_circle(Vector2(f * 0.17, -0.12), 0.05, Color(0.1, 0.08, 0.14))
-			draw_circle(Vector2(f * 0.17, 0.12), 0.05, Color(0.1, 0.08, 0.14))
-			draw_circle(Vector2(f * 0.05, 0.22), 0.045, Color(0.16, 0.12, 0.2))
+			draw_circle(Vector2(f * 0.15, -0.03), 0.13, Color(1, 1, 1, 0.98))
+			draw_circle(Vector2(f * 0.215, -0.03), 0.058, Color(0.08, 0.07, 0.12))
+			draw_line(Vector2(f * -0.02, -0.24), Vector2(f * 0.26, -0.18), Color(0.08, 0.07, 0.12), 0.055)
+			draw_arc(Vector2(f * 0.26, 0.15), 0.065, 0.35, 2.4, 8, Color(0.08, 0.07, 0.12), 0.032)
+		elif kind == JellyPlayer.Body.HAND_L or kind == JellyPlayer.Body.HAND_R:
+			var pl: JellyPlayer = get_parent().get_parent()
+			var f := pl.facing
+			draw_circle(Vector2(f * 0.16, 0.10), r * 0.52, outline)
+			draw_circle(Vector2(f * 0.16, 0.10), r * 0.42, mainc)
+			draw_circle(Vector2(f * 0.06, 0.02), r * 0.20, Color(1, 1, 1, 0.5))
+		elif kind == JellyPlayer.Body.FOOT_L or kind == JellyPlayer.Body.FOOT_R:
+			var pl: JellyPlayer = get_parent().get_parent()
+			var f := pl.facing
+			draw_circle(Vector2(f * 0.18, 0.10), r * 0.46, Color(darkc.r, darkc.g, darkc.b, 0.9))
+			draw_circle(Vector2(f * 0.16, 0.08), r * 0.34, mainc)
+
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
