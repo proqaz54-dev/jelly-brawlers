@@ -32,6 +32,23 @@ fi
 mkdir -p "$PROJECT_DIR/build"
 cd "$PROJECT_DIR"
 
+echo "== configuring editor settings =="
+SETTINGS="$HOME/.config/godot/editor_settings-4.tres"
+mkdir -p "$(dirname "$SETTINGS")"
+if ! grep -q 'export/android/gradle_build/use_gradle_build' "$SETTINGS" 2>/dev/null; then
+  if [ ! -f "$SETTINGS" ]; then
+    printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n' > "$SETTINGS"
+  fi
+  {
+    echo "export/android/java_sdk_path = \"${JAVA_HOME:-}\""
+    echo "export/android/android_sdk_path = \"${ANDROID_HOME:-}\""
+    echo "export/android/gradle_build/use_gradle_build = false"
+    echo "export/android/debug_keystore = \"$PROJECT_DIR/android/debug.keystore\""
+    echo "export/android/debug_keystore_user = \"androiddebugkey\""
+    echo "export/android/debug_keystore_pass = \"android\""
+  } >> "$SETTINGS"
+fi
+
 echo "== importing project =="
 "$GODOT_BIN_DIR/godot" --headless --path "$PROJECT_DIR" --import
 
